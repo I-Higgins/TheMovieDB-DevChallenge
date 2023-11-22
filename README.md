@@ -1,0 +1,2 @@
+# TheMovieDB-DevChallenge
+A movie information iOS application written in Programmatic Swift, powered by The Movie Database API and made in a single week. This app was created as part of a Development Challenge and features a searchable list of the top 20 most popular rated movies.
