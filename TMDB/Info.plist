@@ -4,8 +4,8 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Jomhuria-Regular.ttf</string>
-		<string>Inter-VariableFont_slnt,wght.ttf</string>
+		<string>Jomhuria.ttf</string>
+		<string>Inter.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
