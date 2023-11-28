@@ -30,14 +30,27 @@ struct MovieModel : Codable, Identifiable {
     var video: Bool?
     var vote_average: Float?
     var vote_count: Int?
+    
+    public func getReleaseYear() -> String {
+        return String(self.release_date!.prefix(4))
+    }
+    
+    public func getVotePercentage() -> String {
+        return "\(String(Int((self.vote_average ?? 0) * 10)))"
+    }
 }
 
 public struct MovieData: Codable {
 
-    public var posterImage: Data
-    var movieInfo: MovieModel
+    public var posterImage: Data = Data()
+    public var backDropImage: Data = Data()
+    var movieInfo: MovieModel = MovieModel()
     
-    public func image() -> UIImage {
+    public func getPosterImage() -> UIImage {
         return UIImage(data: self.posterImage) ?? UIImage()
+    }
+    
+    public func getBackDropImage() -> UIImage {
+        return UIImage(data: self.backDropImage) ?? UIImage()
     }
 }

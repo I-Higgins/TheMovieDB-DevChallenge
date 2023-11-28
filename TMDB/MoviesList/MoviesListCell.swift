@@ -10,6 +10,7 @@ import UIKit
 class MoviesListCell: UITableViewCell {
     
     static let identifier = "MoviesListCell"
+    var movieData = MovieData()
     
     private let coverImage: UIImageView = {
        let imageView = UIImageView()
@@ -23,7 +24,9 @@ class MoviesListCell: UITableViewCell {
        let label = UILabel()
         label.textColor = .black
         label.textAlignment = .left
-        label.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont(name: "Inter", size: 16)!)
+        let font = UIFont(name: "Inter", size: 16)!
+        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: font.pointSize)
+        label.font = boldFont
         label.text = "Error"
         return label
     }()
@@ -37,12 +40,24 @@ class MoviesListCell: UITableViewCell {
         return label
     }()
     
+    private let userRatingPercentage: UILabel = {
+       let label = UILabel()
+        label.textColor = .black
+        label.textAlignment = .left
+        let font = UIFont(name: "Inter", size: 12)!
+        let boldFont = UIFont(descriptor: font.fontDescriptor.withSymbolicTraits(.traitBold)!, size: font.pointSize)
+        label.font = boldFont
+        label.text = "Error"
+        return label
+    }()
+    
     private let userRating: UILabel = {
        let label = UILabel()
         label.textColor = .black
         label.textAlignment = .left
+        let font = UIFont(name: "Inter", size: 12)!
         label.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont(name: "Inter", size: 12)!)
-        label.text = "Error"
+        label.text = "user score"
         return label
     }()
     
@@ -83,12 +98,13 @@ class MoviesListCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(with movieInfo: MovieData) {
-        self.coverImage.image = movieInfo.image()
-        self.titleLabel.text = movieInfo.movieInfo.title
-        self.releaseYearLabel.text = String(movieInfo.movieInfo.release_date!.prefix(4))
-        self.userRating.text = "\(String(Int((movieInfo.movieInfo.vote_average ?? 0) * 10)))% user score"
-        for (index, genreID) in movieInfo.movieInfo.genre_ids!.enumerated() {
+    public func configure(with movieData: MovieData) {
+        self.movieData = movieData
+        self.coverImage.image = movieData.getPosterImage()
+        self.titleLabel.text = movieData.movieInfo.title
+        self.releaseYearLabel.text = movieData.movieInfo.getReleaseYear()
+        self.userRatingPercentage.text = movieData.movieInfo.getVotePercentage() + "%"
+        for (index, genreID) in movieData.movieInfo.genre_ids!.enumerated() {
             let text = GenreDictionary[genreID]
             self.genreArray[index].text = text
         }
@@ -98,18 +114,18 @@ class MoviesListCell: UITableViewCell {
         self.contentView.addSubview(coverImage)
         self.contentView.addSubview(titleLabel)
         self.contentView.addSubview(releaseYearLabel)
+        self.contentView.addSubview(userRatingPercentage)
         self.contentView.addSubview(userRating)
         genreArray.forEach { genreID in
             self.contentView.addSubview(genreID)
+            genreID.translatesAutoresizingMaskIntoConstraints = false
         }
         
         coverImage.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         releaseYearLabel.translatesAutoresizingMaskIntoConstraints = false
         userRating.translatesAutoresizingMaskIntoConstraints = false
-        genreArray.forEach { genreID in
-            genreID.translatesAutoresizingMaskIntoConstraints = false
-        }
+        userRatingPercentage.translatesAutoresizingMaskIntoConstraints = false
         
         coverImage.layer.cornerRadius = 8
         coverImage.clipsToBounds = true
@@ -125,13 +141,14 @@ class MoviesListCell: UITableViewCell {
         titleLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
         titleLabel.widthAnchor.constraint(equalToConstant: 220).isActive = true
         
-        releaseYearLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor).isActive = true
+        releaseYearLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: 5).isActive = true
         releaseYearLabel.leadingAnchor.constraint(equalTo: self.coverImage.trailingAnchor, constant: 27).isActive = true
-        releaseYearLabel.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor, constant: -12).isActive = true
         
-        userRating.topAnchor.constraint(equalTo: self.releaseYearLabel.bottomAnchor, constant: 12).isActive = true
-        userRating.leadingAnchor.constraint(equalTo: self.coverImage.trailingAnchor, constant: 27).isActive = true
-        userRating.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor, constant: -12).isActive = true
+        userRatingPercentage.topAnchor.constraint(equalTo: self.releaseYearLabel.bottomAnchor, constant: 5).isActive = true
+        userRatingPercentage.leadingAnchor.constraint(equalTo: self.coverImage.trailingAnchor, constant: 27).isActive = true
+        
+        userRating.topAnchor.constraint(equalTo: self.releaseYearLabel.bottomAnchor, constant: 5).isActive = true
+        userRating.leadingAnchor.constraint(equalTo: self.userRatingPercentage.trailingAnchor, constant: 8).isActive = true
         
         for (index, genreID) in genreArray.enumerated() {
             genreID.bottomAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.bottomAnchor).isActive = true

@@ -23,13 +23,13 @@ class MoviesList: UIViewController {
     private let searchBar: UISearchBar = {
         let searchBarTextField = UISearchBar()
         searchBarTextField.placeholder = "Search"
-        searchBarTextField.backgroundColor = .white
+        searchBarTextField.backgroundColor = .systemBackground
         searchBarTextField.tintColor = .black
         searchBarTextField.isEnabled = true
         searchBarTextField.layer.cornerRadius = 30
         searchBarTextField.layer.masksToBounds = true
         searchBarTextField.searchTextField.leftViewMode = .never
-        searchBarTextField.searchTextField.backgroundColor = .white
+        searchBarTextField.searchTextField.backgroundColor = .systemBackground
         searchBarTextField.searchTextField.textColor = .black
         searchBarTextField.searchTextField.tintColor = .black
         searchBarTextField.searchTextPositionAdjustment = UIOffset(horizontal: -7, vertical: 0)
@@ -48,7 +48,7 @@ class MoviesList: UIViewController {
     
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = .white
+        tableView.backgroundColor = .systemBackground
         tableView.allowsSelection = true
         tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         tableView.showsVerticalScrollIndicator = false
@@ -75,16 +75,16 @@ class MoviesList: UIViewController {
                 self.filteredListOfMovies = self.listOfMovies
                 DispatchQueue.main.async(execute: { self.tableView.reloadData() })
                 let moviesRequest = PopularMoviesRequest()
-                self.listOfMovies.forEach() { movieInfo in
-                    moviesRequest.RetrieveMoviePoster(posterPath: movieInfo.movieInfo.poster_path ?? "") { result in
+                self.listOfMovies.forEach() { movieData in
+                    moviesRequest.RetrieveMoviePoster(movieInfo: movieData.movieInfo) { result in
                         switch result {
                         case .success(let imageData):
                             DispatchQueue.main.async {
-                                if let index = self.listOfMovies.firstIndex(where: {$0.movieInfo.title == movieInfo.movieInfo.title})
+                                if let index = self.listOfMovies.firstIndex(where: {$0.movieInfo.title == movieData.movieInfo.title})
                                 {
                                     self.listOfMovies[index].posterImage = imageData
                                 }
-                                if let index = self.filteredListOfMovies.firstIndex(where: {$0.movieInfo.title == movieInfo.movieInfo.title})
+                                if let index = self.filteredListOfMovies.firstIndex(where: {$0.movieInfo.title == movieData.movieInfo.title})
                                 {
                                     self.filteredListOfMovies[index].posterImage = imageData
                                 }
@@ -92,6 +92,24 @@ class MoviesList: UIViewController {
                             DispatchQueue.main.async(execute: { self.tableView.reloadData() })
                         case .failure(let error):
                             print("Error: \(error)")
+                        }
+                        moviesRequest.RetrieveMovieBackDrop(movieInfo: movieData.movieInfo) { result in
+                            switch result {
+                            case .success(let imageData):
+                                DispatchQueue.main.async {
+                                    if let index = self.listOfMovies.firstIndex(where: {$0.movieInfo.title == movieData.movieInfo.title})
+                                    {
+                                        self.listOfMovies[index].backDropImage = imageData
+                                    }
+                                    if let index = self.filteredListOfMovies.firstIndex(where: {$0.movieInfo.title == movieData.movieInfo.title})
+                                    {
+                                        self.filteredListOfMovies[index].backDropImage = imageData
+                                    }
+                                }
+                                DispatchQueue.main.async(execute: { self.tableView.reloadData() })
+                            case .failure(let error):
+                                print("Error: \(error)")
+                            }
                         }
                     }
                 }
@@ -106,8 +124,8 @@ class MoviesList: UIViewController {
     private func setupUI() {
         self.view.backgroundColor = .systemBackground
         self.tableView.keyboardDismissMode = .onDrag
-        upperView.addSubview(searchBar)
-        upperView.addSubview(titleLabel)
+        self.upperView.addSubview(searchBar)
+        self.upperView.addSubview(titleLabel)
         self.view.addSubview(upperView)
         self.view.addSubview(tableView)
         
@@ -116,22 +134,22 @@ class MoviesList: UIViewController {
         self.titleLabel.translatesAutoresizingMaskIntoConstraints = false
         self.searchBar.translatesAutoresizingMaskIntoConstraints = false
         
-        upperView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        upperView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        upperView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        upperView.bottomAnchor.constraint(equalTo: self.view.topAnchor, constant: 213).isActive = true
+        self.upperView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        self.upperView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        self.upperView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        self.upperView.bottomAnchor.constraint(equalTo: self.view.topAnchor, constant: 213).isActive = true
         
-        searchBar.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 57).isActive = true
-        searchBar.leadingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.leadingAnchor, constant: 37).isActive = true
-        searchBar.trailingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.trailingAnchor, constant: -37).isActive = true
+        self.searchBar.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 57).isActive = true
+        self.searchBar.leadingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.leadingAnchor, constant: 37).isActive = true
+        self.searchBar.trailingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.trailingAnchor, constant: -37).isActive = true
         
-        titleLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 143).isActive = true
-        titleLabel.leadingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.leadingAnchor, constant: 34).isActive = true
+        self.titleLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 143).isActive = true
+        self.titleLabel.leadingAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.leadingAnchor, constant: 34).isActive = true
         
-        tableView.topAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.bottomAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        self.tableView.topAnchor.constraint(equalTo: self.upperView.layoutMarginsGuide.bottomAnchor).isActive = true
+        self.tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
     }
 }
 
@@ -147,8 +165,18 @@ extension MoviesList: UITableViewDelegate, UITableViewDataSource {
         let movieInfo = self.filteredListOfMovies[indexPath.row]
         cell.configure(with: movieInfo)
         cell.selectionStyle = .none
-        cell.backgroundColor = UIColor.white
+        cell.backgroundColor = UIColor.systemBackground
         return cell
+    }
+}
+
+extension MoviesList {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let cell = tableView.cellForRow(at: indexPath) as! MoviesListCell
+        let controller = MovieDetails()
+        controller.configure(movieData: cell.movieData)
+        self.navigationController?.pushViewController(controller, animated: true)
     }
 }
 

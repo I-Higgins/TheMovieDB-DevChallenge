@@ -43,8 +43,25 @@ class PopularMoviesRequest: NSObject {
         }.resume()
     }
     
-    func RetrieveMoviePoster(posterPath: String, completion: @escaping (Result<Data, NetworkError>) -> Void) {
-        var request = URLRequest(url: URL(string: "https://image.tmdb.org/t/p/w92\(posterPath)?api_key=\(Keys.TheMovieDataBaseApiKey)")!)
+    func RetrieveMoviePoster(movieInfo: MovieModel, completion: @escaping (Result<Data, NetworkError>) -> Void) {
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w300\(movieInfo.poster_path ?? "")?api_key=\(Keys.TheMovieDataBaseApiKey)") else {
+            completion(.failure(.invalidURL))
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard let data = data, error == nil else {
+                completion(.failure(.noData))
+                return
+            }
+                completion(.success(data))
+        }.resume()
+    }
+    
+    func RetrieveMovieBackDrop(movieInfo: MovieModel, completion: @escaping (Result<Data, NetworkError>) -> Void) {
+        var request = URLRequest(url: URL(string: "https://image.tmdb.org/t/p/w1280\(movieInfo.backdrop_path ?? "")?api_key=\(Keys.TheMovieDataBaseApiKey)")!)
         request.httpMethod = "GET"
         
         URLSession.shared.dataTask(with: request) { (data, response, error) in
