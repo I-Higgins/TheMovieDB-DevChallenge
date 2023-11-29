@@ -53,7 +53,6 @@ class MovieDetails: UIViewController {
         view.clipsToBounds = true
         
         let symbol = UIImageView(image: UIImage(named: "Component 2"))
-//        symbol.frame(forAlignmentRect: CGRect(x: 0, y: 0, width: 28.18439, height: 26.9037))
         
         view.addSubview(symbol)
         symbol.translatesAutoresizingMaskIntoConstraints = false
@@ -268,7 +267,57 @@ class MovieDetails: UIViewController {
         self.overviewText.text = movieData.movieInfo.overview
     }
     
+    @objc func backButton() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     private func setupUI() {
+        
+        let btnView = UIView()
+        btnView.frame = CGRect(x: 0, y: 0, width: 136, height: 26)
+        
+        let btnBackground = UIView()
+        btnBackground.backgroundColor = .white
+        btnBackground.layer.opacity = 0.3
+        btnBackground.layer.cornerRadius = 13
+        btnBackground.clipsToBounds = true
+        
+        let img1 = UIImageView(image: UIImage(named: "Vector"))
+        
+        let txt1 = UILabel()
+        txt1.text = "Back to Search"
+        txt1.textColor = .white
+        txt1.backgroundColor = .clear
+        txt1.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: UIFont(name: "Inter", size: 10)!)
+        
+        btnView.addSubview(btnBackground)
+        btnView.addSubview(img1)
+        btnView.addSubview(txt1)
+        btnBackground.translatesAutoresizingMaskIntoConstraints = false
+        btnView.translatesAutoresizingMaskIntoConstraints = false
+        img1.translatesAutoresizingMaskIntoConstraints = false
+        txt1.translatesAutoresizingMaskIntoConstraints = false
+        
+        btnBackground.leadingAnchor.constraint(equalTo: btnView.leadingAnchor).isActive = true
+        btnBackground.centerYAnchor.constraint(equalTo: btnView.centerYAnchor).isActive = true
+        btnBackground.widthAnchor.constraint(equalToConstant: 136).isActive = true
+        btnBackground.heightAnchor.constraint(equalToConstant: 26).isActive = true
+        
+        img1.centerYAnchor.constraint(equalTo: btnView.centerYAnchor).isActive = true
+        img1.leadingAnchor.constraint(equalTo: btnView.leadingAnchor, constant: 24).isActive = true
+        
+        txt1.centerYAnchor.constraint(equalTo: btnView.centerYAnchor).isActive = true
+        txt1.leadingAnchor.constraint(equalTo: img1.trailingAnchor, constant: 10).isActive = true
+        
+        
+        let item1 = UIBarButtonItem(customView: btnView)
+        #warning("I'm unsure why this button's action is not working as expected...")
+        item1.action = #selector(self.backButton)
+        item1.target = self
+        item1.isEnabled = true
+        
+        self.navigationItem.setLeftBarButton(item1, animated: true)
+        
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(upperImage)
         self.posterImage.addSubview(imageView)
@@ -375,6 +424,16 @@ class MovieDetails: UIViewController {
         self.overviewText.topAnchor.constraint(equalTo: self.overviewTitle.bottomAnchor, constant: 14).isActive = true
         self.overviewText.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 37).isActive = true
         self.overviewText.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -37).isActive = true
-//        self.overviewText.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -37).isActive = true
+    }
+}
+
+extension UINavigationController: UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
     }
 }

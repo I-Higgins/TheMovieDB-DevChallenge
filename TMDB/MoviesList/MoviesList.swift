@@ -122,6 +122,7 @@ class MoviesList: UIViewController {
     // MARK: Setup UI
     
     private func setupUI() {
+        
         self.view.backgroundColor = .systemBackground
         self.tableView.keyboardDismissMode = .onDrag
         self.upperView.addSubview(searchBar)
