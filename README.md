@@ -4,4 +4,4 @@ A movie information iOS application written in Programmatic Swift, powered by [T
 
 ## Eample images
 
-<img src="Images/Screenshot1.PNG" width="200"><img src="Images/Screenshot2.PNG" width="200"><img src="Images/Screenshot3.PNG" width="200"><img src="Images/Screenshot4.PNG" width="200">
+<img src="Images/Screenshot1.PNG" width="200"><img src="Images/Screenshot2.PNG" width="200"><img src="Images/Screenshot3.PNG" width="200"><img src="Images/Screenshot4.PNG" width="200"><img src="Images/Screenshot5.PNG" width="200"><img src="Images/Screenshot6.PNG" width="200">
